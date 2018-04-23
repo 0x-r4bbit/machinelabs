@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
-import { TriggerAnnotated, Event } from 'firebase-functions';
-import { DeltaSnapshot } from 'firebase-functions/lib/providers/database';
+
+import { Change, Runnable, TriggerAnnotated } from 'firebase-functions/lib/cloud-functions';
+import { DataSnapshot } from 'firebase-functions/lib/providers/database';
 
 import { InvocationProcessor } from './invocation-processor/invocation-processor';
 import { getInvocationById, updateInvocation } from './invocation-processor/invocation-crud';
@@ -18,4 +19,4 @@ const invocationProcessor = new InvocationProcessor(getInvocationById, serverRes
 
 export const postInvocationWrite = functions.database
   .ref('/invocations/{id}/common/id')
-  .onWrite(event => invocationProcessor.process(event.data.val()));
+  .onWrite((change, context) => invocationProcessor.process(change.after.val()));
